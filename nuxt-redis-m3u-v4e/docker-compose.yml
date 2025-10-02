@@ -1,0 +1,25 @@
+version: "3.9"
+services:
+  app:
+    build: .
+    container_name: nuxt-redis-m3u
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - MEDIA_ROOT=/data
+      - SESSION_IDLE_SECONDS=1800
+      - SESSION_SLIDING=true
+      - SCHEDULER_INTERVAL_SEC=60
+    volumes:
+      - m3u_data:/data
+    ports:
+      - "3000:3000"
+    depends_on: [redis]
+  redis:
+    image: redis:7-alpine
+    container_name: nuxt-redis
+    command: ["redis-server","--appendonly","yes"]
+    volumes:
+      - m3u_redis:/data
+volumes:
+  m3u_data:
+  m3u_redis:

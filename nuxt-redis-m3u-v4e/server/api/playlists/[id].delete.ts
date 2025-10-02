@@ -1,0 +1,1 @@
+import { requireRole } from '../../utils/rbac.js'; import { r } from '../../utils/redis.js'; export default defineEventHandler(async(e)=>{ requireRole(e,'EDITOR'); const id=e.context.params.id; await r().del('playlist:'+id); await r().srem('org:1:playlists', String(id)); return {ok:true} })

@@ -1,0 +1,1 @@
+import { requireRole } from '../utils/rbac.js'; import { createUser } from '../utils/session.js'; export default defineEventHandler(async(e)=>{ requireRole(e,'ADMIN'); const b=await readBody(e); await createUser(b.username,b.password,b.role||'EDITOR'); return {ok:true} })

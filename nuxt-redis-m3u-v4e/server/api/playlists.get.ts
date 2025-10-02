@@ -1,0 +1,1 @@
+import { r } from '../utils/redis.js'; export default defineEventHandler(async()=>{ const ids=await r().smembers('org:1:playlists'); const out=[]; for(const id of ids){ const raw=await r().get('playlist:'+id); if(raw) out.push(JSON.parse(raw)); } out.sort((a,b)=>a.id-b.id); return out })

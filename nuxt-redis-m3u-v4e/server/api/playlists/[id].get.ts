@@ -1,0 +1,1 @@
+import { r } from '../../utils/redis.js'; export default defineEventHandler(async(e)=>{ const id=e.context.params.id; const raw=await r().get('playlist:'+id); if(!raw) throw createError({status:404}); return JSON.parse(raw) })

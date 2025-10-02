@@ -1,0 +1,17 @@
+{
+  "name": "nuxt-redis-m3u",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "NUXT_TELEMETRY_DISABLED=1 nuxt dev -p 3000",
+    "build": "nuxt build",
+    "start": "node .output/server/index.mjs"
+  },
+  "dependencies": {
+    "nuxt": "^3.12.0",
+    "ioredis": "^5.4.1",
+    "bcryptjs": "^2.4.3",
+    "mime": "^4.0.4",
+    "sortablejs": "^1.15.3"
+  }
+}

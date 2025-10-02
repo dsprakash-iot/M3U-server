@@ -1,0 +1,1 @@
+import { requireRole } from '../utils/rbac.js'; import { deleteUser } from '../utils/session.js'; export default defineEventHandler(async(e)=>{ requireRole(e,'ADMIN'); const b=await readBody(e); await deleteUser(b.username); return {ok:true} })

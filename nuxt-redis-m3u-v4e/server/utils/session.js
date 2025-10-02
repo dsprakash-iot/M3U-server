@@ -1,0 +1,10 @@
+import { r } from './redis.js'
+import bcrypt from 'bcryptjs'
+export async function ensureAdmin(){ if(await r().exists('user:admin')) return; const hash=await bcrypt.hash('admin123',10); await r().hmset('user:admin',{username:'admin',password:hash,role:'ADMIN'}); await r().sadd('org:1:users','admin') }
+export async function createUser(username,password,role='EDITOR'){ if(await r().exists('user:'+username)) throw new Error('User exists'); const hash=await bcrypt.hash(password,10); await r().hmset('user:'+username,{username,password:hash,role}); await r().sadd('org:1:users',username) }
+export async function deleteUser(username){ await r().del('user:'+username); await r().srem('org:1:users',username) }
+export async function listUsers(){ const ms=await r().smembers('org:1:users'); const out=[]; for(const u of ms){ const h=await r().hgetall('user:'+u); if(h?.username) out.push({username:h.username,role:h.role||'EDITOR'}) } return out }
+export async function login(login,password){ const h=await r().hgetall('user:'+login); if(!h?.password) return null; if(!(await bcrypt.compare(password,h.password))) return null; return { username:h.username, role:h.role||'EDITOR' } }
+export async function createSession(e,user){ const cfg=useRuntimeConfig(); const sid=crypto.randomUUID(); await r().set('s:'+sid, JSON.stringify({username:user.username, role:user.role}), 'EX', cfg.sessionIdleSeconds); setCookie(e,'sid',sid,{httpOnly:true,sameSite:'lax',path:'/',maxAge:cfg.sessionIdleSeconds}) }
+export async function readSession(e){ const cfg=useRuntimeConfig(); const sid=getCookie(e,'sid'); if(!sid) return null; const raw=await r().get('s:'+sid); if(!raw) return null; if(cfg.sessionSliding){ await r().expire('s:'+sid,cfg.sessionIdleSeconds); setCookie(e,'sid',sid,{httpOnly:true,sameSite:'lax',path:'/',maxAge:cfg.sessionIdleSeconds}) } return { ...JSON.parse(raw), sid } }
+export async function destroySession(e){ const sid=getCookie(e,'sid'); if(sid) await r().del('s:'+sid); deleteCookie(e,'sid') }

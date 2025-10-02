@@ -1,0 +1,1 @@
+import { login, createSession } from '../../utils/session.js'; export default defineEventHandler(async(e)=>{ const b=await readBody(e); const u=await login(b.login,b.password); if(!u) throw createError({status:401,message:'Invalid credentials'}); await createSession(e,u); return {ok:true} })
